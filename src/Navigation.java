@@ -1,18 +1,36 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class Navigation {
+import javax.swing.text.StyledEditorKit.BoldAction;
+
+public class Navigation implements Runnable {
     private GPS gps;
     private List<VisualSensor> visualSensors = new ArrayList<>();
+    private boolean alive;
+    private int sendingInterval;
 
     public Navigation() {
+        this.alive = true;
+        this.sendingInterval = 3;
         this.gps = new GPS();
         visualSensors.add(new VisualSensor());
         visualSensors.add(new VisualSensor());
     }
 
     public boolean SendHeartBeat() {
-        return (gps.findNewRoute() || gps.isDisconnected()) && checkSensors();
+        boolean foundNewRoute = gps.findNewRoute();
+        boolean isDisconnected = gps.isDisconnected();
+        boolean checkedSensors = checkSensors();
+        boolean heartBeat = ((foundNewRoute || isDisconnected) && checkedSensors);
+        if(heartBeat == true) {
+            System.out.println("\nNavigation HeartBeat - HEALTHY\n");
+        }
+        else {
+            System.out.println("\nNavigation Heartbeat - FLATLINE\n");
+        }
+        this.setAlive(heartBeat);
+        return heartBeat;
     }
 
     private boolean checkSensors(){
@@ -24,8 +42,25 @@ public class Navigation {
         return true;
     }
 
-    public static void main(String[] args) {
-        Navigation n = new Navigation();
-        System.out.println(n.SendHeartBeat());
+    public boolean isAlive() {
+        return this.alive;
+    }
+
+    public void setAlive(boolean _alive) {
+        this.alive = _alive;
+    }
+
+    public void run() {
+        System.out.println("\nBeginning Navigation...\n");
+        try {
+            Navigation n = new Navigation();
+            while(n.isAlive() == true) {
+                n.SendHeartBeat();
+            }
+            TimeUnit.SECONDS.sleep(sendingInterval);
+        }
+        catch(Exception ex) {
+            System.out.println(ex);
+        }
     }
 }

@@ -6,7 +6,6 @@ public class VisualSensor {
 
     public boolean detectObstacle() {
         Obstacle obstacle = new Obstacle("Road Hazard", (Math.random() * 10) <= 1);
-        System.out.println(obstacle.isCriticalDanger());
         if(!obstacle.isCriticalDanger()) {
             obstacles.add(obstacle);
             return false;
