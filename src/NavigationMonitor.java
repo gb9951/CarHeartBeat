@@ -1,4 +1,7 @@
 import java.util.concurrent.TimeUnit;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 public class NavigationMonitor {
@@ -9,7 +12,7 @@ public class NavigationMonitor {
     private FaultMonitor faultMonitor;
 
     public NavigationMonitor() {
-        this.checkingInterval = 3;
+        this.checkingInterval = 2;
         this.checkingTime = 0;
         this.expireTime = 0;
         this.lastUpdatedTime = 0;
@@ -17,32 +20,31 @@ public class NavigationMonitor {
     }
 
     public boolean checkAlive(Thread nav) {
-        this.updateTime();
         return nav.isAlive();
     }
 
-    public void updateTime() {
-        
+    public int getCheckingInterval() {
+        return this.checkingInterval;
     }
 
     public void notifyFault() {
         this.faultMonitor.sendFaultNotification(this.expireTime);
     }
 
-    public void monitor() {
+    public static void main(String[] args) {
         try {
-            System.out.print("\nBeginning Navigation Monitor\n");
-            for(;;) {
-                Date date = new Date();
-                Thread newNavigation = new Thread(new Navigation());
-                newNavigation.start();
-                while(checkAlive(newNavigation) == true) {
-                    this.lastUpdatedTime = this.checkingTime;
-                    this.checkingTime = (int)date.getTime();
-                    TimeUnit.SECONDS.sleep(this.checkingInterval);
+            NavigationMonitor navMonitor = new NavigationMonitor();
+            System.out.println("\nBeginning Navigation System Multiprocess Testing Suite...\n");
+            for(int x = 0; x < 20; x++) {
+                System.out.println("\nBeginning Multiprocess Navigation System Test #"+(x+1)+"\n");
+                ProcessBuilder monitorProcess = new ProcessBuilder("java", "Navigation");
+                Process navProcess = monitorProcess.start();
+                BufferedReader processReader = new BufferedReader(new InputStreamReader(navProcess.getInputStream()));
+                String output = "";
+                while((output = processReader.readLine()) != null) {
+                    System.out.println(output);
                 }
-                this.expireTime = (int)date.getTime();
-                notifyFault();
+                TimeUnit.SECONDS.sleep(navMonitor.getCheckingInterval());
             }
         }
         catch(Exception ex) {

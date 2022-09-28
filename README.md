@@ -14,9 +14,7 @@ Alternatively you can run the project by compiling and running the 'CarHeartBeat
 
 Our project is meant to be a representation of a potential Navigation System Monitor process that monitors the GPS and Navigation systems.
 
-It achieves this through some fun multithreading solutions. 
-
-It will run infinitely by starting a navigation/gps process thread, and will monitor this thread until it randomly ends or crashes, then it will start a new one and continue the process until you manually kill/terminate the whole system.
+It achieves this by testing the Navigation class as a seperate process roughly 20 times.
 
 While a somewhat crude implementation, it clearly demonstrates the Heartbeat Tactic in monitoring different processes.
 

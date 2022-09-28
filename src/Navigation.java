@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.text.StyledEditorKit.BoldAction;
 
-public class Navigation implements Runnable {
+public class Navigation {
     private GPS gps;
     private List<VisualSensor> visualSensors = new ArrayList<>();
     private boolean alive;
@@ -42,6 +42,10 @@ public class Navigation implements Runnable {
         return true;
     }
 
+    public int getSendingInterval() {
+        return this.sendingInterval;
+    }
+
     public boolean isAlive() {
         return this.alive;
     }
@@ -50,17 +54,16 @@ public class Navigation implements Runnable {
         this.alive = _alive;
     }
 
-    public void run() {
-        System.out.println("\nBeginning Navigation...\n");
+    public static void main(String[] args) {
         try {
-            Navigation n = new Navigation();
-            while(n.isAlive() == true) {
-                n.SendHeartBeat();
+            Navigation nav = new Navigation();
+            while(nav.isAlive() == true) {
+                nav.SendHeartBeat();
             }
-            TimeUnit.SECONDS.sleep(sendingInterval);
         }
         catch(Exception ex) {
-            System.out.println(ex);
+            System.out.println("ERROR: "+ex);
         }
     }
+
 }
